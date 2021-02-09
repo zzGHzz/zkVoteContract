@@ -27,8 +27,8 @@ const root: string = function () {
     return path.join(path.sep, ...dirs)
 }()
 
-const voteLibFile = root + '/contractV2/BinaryVoteV2.sol'
-const votingContractFile = root + '/contractV2/VotingContractV2.sol'
+const voteLibFile = root + '/contracts/BinaryVoteV2.sol'
+const votingContractFile = root + '/contracts/VotingContractV2.sol'
 
 const binVoteLib = utils.getSolcBin(voteLibFile, 'BinaryVoteV2')
 const abiVoteLib = JSON.parse(utils.getSolcABI(voteLibFile, 'BinaryVoteV2'))

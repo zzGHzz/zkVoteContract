@@ -1,18 +1,13 @@
-# A Privacy-Preserved Voting Protocol
+# A Privacy-Preserved Voting Protocol Based on Zero-Knowledge Proof
 
 ## Introduction
 
-This project implements the voting protocol described in `protocol.md`. There are three contracts:
+This project implements the voting protocol described in [protocol.md](https://github.com/vechain-community/zkpvote-contracts/blob/master/protocol.md). There are three contracts:
 
-* `BinaryVote` - implements a single vote where voters are only allowed to cast a **YES** or **NO** ballot. Note that the contract uses the [P256 or Secp256r1](https://www.secg.org/sec2-v2.pdf) elliptic curve.
-* `VotingContract` - responsible for hosting multiple votes and executing requests from users to call functions of a deployed `BinaryVote` contract.
-* `VoteCreator` - responsible for creating new votes through deploying `BinaryVote` and registering the instance in `VotingContract`.
+* `BinaryVoteV2` implements functions for a binary vote. A binary vote is a vote where you can only vote yes or no. Note that the implementation uses the [P256 or Secp256r1](https://www.secg.org/sec2-v2.pdf) elliptic curve.
+* `VotingContractV2` is responsible for hosting multiple instances of binary votes and the main entry for users to interact with a particular vote. The implemention adopts the second strategy described in [1] to manage multiple instances of a separate contract within a single contract. 
 
-Their relationships have been illustrated by the figure below. 
-
-![Overview](./figs/overview.png)
-
-## Pros and Cons of the Voting Protocol
+## Voting Protocol
 
 ### Pros
 * Ballot privacy - no one except the voting authority knows the ballot contents.
@@ -31,16 +26,9 @@ Their relationships have been illustrated by the figure below.
 ## Voting Process
 The following is the whole voting process:
 
-1. The voting authority creates a new vote via `VoteCreator.newBinaryVote`. The ID of the created vote is compted by `keccak256(authority_address, deployed_contract_address)`.
-2. The voting authority generates a key pair for the vote and register the public key via `VotingContract.setAuthPubKey`.
-3. Voters upload their ballots via `VotingContract.cast`.
-4. The voting authority ends the casting period via `VotingContract.beginTally`.
-5. The voting authority off-chain computes the tally result and upload the result via `VotingContract.setTallyRes`.
-6. The voting authority ends the tally period via `VotingContract.endTally`.
-7. Anyone can verify the result via `VotingContract.verifyTallyRes`. They can also verify individual ballot via `VotingContract.verifyBallot`.
-
-`./test/testVotingContract.js` implements the code for testing a complete voting process.
-
-## Limitations
-
-The implementation is created as a prototype of a privacy-preserved voting system. Therefore, it does not include features such as timing control and voter registration that are commonly seen in a typical voting process. The system currently only supports the vote where voters cast YES/NO ballots.
+1. The voting authority creates a new vote via `VoteContractV2.newBinaryVote`.
+2. The voting authority generates a key pair for the vote and register the public key via `VotingContractV2.setAuthPubKey`.
+3. Voters generate a new key pair to computed their encrypted ballots and upload their ballots via `VotingContractV2.cast`.
+4. The voting authority computes the tally result and upload the result via `VotingContractV2.setTallyRes`.
+5. The voting authority ends the tally via `VotingContractV2.endTally`.
+6. Anyone can verify the result via `VotingContractV2.verifyTallyRes`. They can also verify individual ballot via `VotingContractV2.verifyBallot`.
