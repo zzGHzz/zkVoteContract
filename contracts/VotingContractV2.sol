@@ -63,7 +63,7 @@ contract VotingContractV2 {
     ) external {
         require(uint256(voteAuth[id]) > 0, "Vote ID does not exist");
 
-        (bool success, bytes memory _result) = lib.delegatecall(
+        (bool success,) = lib.delegatecall(
             abi.encodeWithSignature(
                 "setAuthPubKey(bytes32,uint256,uint8)",
                 id,
@@ -91,7 +91,7 @@ contract VotingContractV2 {
         require(uint256(voteAuth[id]) > 0, "Vote ID does not exist");
         require(block.timestamp <= castEndTime[id], "Casting has ended");
         
-        (bool success, bytes memory _result) = lib.delegatecall(
+        (bool success,) = lib.delegatecall(
             abi.encodeWithSignature(
                 "cast(bytes32,uint256,uint256,uint256[8],uint256)",
                 id,
